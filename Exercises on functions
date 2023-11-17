@@ -1,0 +1,184 @@
+#### Exercise 1 ####
+# Create a function that given an integer will calculate
+# how many divisors it has (other than 1 and itself).
+# Make the divisors appear by screen.
+
+
+#Complete Solution: it deals with all Z
+count_print_divisors <- function(num) {
+  if (num == 0)
+    stop("The number of divisors of 0 are infinite.")
+  pos_num <- abs(num)
+  if (pos_num == 1 | pos_num == 2)
+    return(paste("The number of divisors of", num, "is:", 0))
+  for (i in 2:sqrt(pos_num)) {
+    if (pos_num %% i == 0) {
+      print(i)
+      print(-i)
+      if (i != pos_num / i) {
+        print(pos_num / i)
+        print(-pos_num / i)
+      }
+      count <- count + 2
+    }
+  }
+  return(paste(
+    "The number of divisors of",
+    num,
+    ", apart from 1 and itself is:",
+    count
+  ))
+}
+
+count_print_divisors(-49)
+count_print_divisors(64)
+count_print_divisors(1)
+count_print_divisors(0)
+
+
+
+
+
+#### Exercise 2 ####
+# The following function calculates the mean and standard deviation
+# of a numeric vector.
+meanANDsd <- function(x) {
+  av <- mean(x)
+  sdev <- sd(x)
+  return(c(mean = av, sd = sdev)) # The function returns this vector
+}
+# Modify the function so that:
+# (a) the default is to use rnorm() to generate 20 random normal numbers,
+# and return the standard deviation;
+# (b) if there are missing values,
+# the mean and standard deviation are calculated for the remaining values.
+# (c) add the possibility to replace the missing values
+# with the median of the data
+
+
+# Solution Exercise 2
+meanANDsd_modified <- function(x = rnorm(20), r.med = FALSE) {
+  if (r.med)
+    x[is.na(x)] <- median(x, na.rm = TRUE)
+  else
+    x <- x[!is.na(x)]
+  av <- mean(x)
+  sdev <- sd(x)
+  return(c(mean = av, sd = sdev))
+}
+
+meanANDsd_modified()
+meanANDsd_modified(c(1, 2, 3, NA, NA, NA, 7, 8, 1, 2, 3, NA, NA, NA, 919))
+meanANDsd_modified(c(1, 2, 3, NA, NA, NA, 7, 8, 1, 2, 3, NA, NA, NA, 919), r.med = TRUE)
+
+
+
+
+
+#### Exercise 3 ####
+# With a user-written function, reproduce the Fibonacci sequence.
+# The latter has many mathematical relationships and
+# has been discovered repeatedly in nature.
+# The sequence is constructed considering the sum of the previous
+# two values, initialized with the values 1 and 1.
+# 1,1,2,3,5,8,13,21,34,55,89,144,...
+# input: an integer indicating the elements of the sequence to be calculated
+
+
+# Solution
+fibonacci_seq <- function(n) {
+  s <- rep(1, n)
+  for (i in seq_along(s)[3:n]) {
+    s[i] <- s[i - 1] + s[i - 2]
+  }
+  return(s)
+}
+
+fibonacci_seq(10)
+fibonacci_seq(20)
+
+
+
+
+
+#### Exercise 4 ####
+# write a function that, taking as input a data.frame,
+# calculate mean and variance for each variable and
+# collect the results in a list
+# input: a data-frame
+data.1 <- data.frame(matrix(rnorm(1000000), ncol = 100))
+
+
+# Solution 1 (probably less efficient)
+mean_variance_df_1 <- function(df) {
+  n <- ncol(df)
+  m <- numeric(n)
+  v <- numeric(n)
+  for (clm in 1:n) {
+    m[clm] <- mean(df[, clm])
+    v[clm] <- var(df[, clm])
+  }
+  l <- list(means = m, variances = v)
+  return(l)
+}
+mean_variance_df_1(data.1)
+
+# Solution 2 (vectorized)
+mean_variance_df_2 <- function(df) {
+  l <- list(means = apply(df, 2, mean),
+            variances = apply(df, 2, var))
+  return(l)
+}
+mean_variance_df_2(data.1)
+
+
+
+#### Exercise 5 ####
+# write a function that, taking as input a vectors of positive numbers,
+# calculate the "population" coefficient of variation of the differences from the highest
+# value, namely from (2,5,1,9,4) --> the differences will be given by
+# 9-2, 9-5, 9-1, etc...
+# pay attention on how R calculates the standard deviation
+
+
+# Solution
+cv_differences <- function(vec) {
+  n <- length(vec)
+  if (n <= 1) {
+    stop("Input vector must have at least two elements.")
+  }
+  differ <- max(vec) - vec
+  pop_mean <- mean(differ)
+  pop_sd <- sd(differ) * sqrt(n / (n - 1))
+  cv <- pop_sd / pop_mean
+  return(cv)
+}
+
+vec <- c(2, 5, 1, 9, 4)
+cv_differences(vec)
+
+
+
+#### Exercise 6 ####
+# compute exponential series
+# sum_{n=0,1,...} (x^n)/n!
+# up to a specified tolerance
+# check if it converges to exp(x)
+
+
+# Solution
+exp_series <- function(x, tol = 10e-5) {
+  error <- Inf
+  n <- 0
+  result <- 0
+  while (error > tol) {
+    result <- result + x ^ n / factorial(n)
+    n <- n + 1
+    error <- exp(x) - result
+  }
+  return(result)
+}
+
+exp_series(10)
+exp_series(-1)
+
